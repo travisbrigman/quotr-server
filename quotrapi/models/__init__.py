@@ -7,5 +7,4 @@ from .package import Package
 from .itempackage import ItemPackage
 from .proposalpackage import ProposalPackage
 from .proposalitem import ProposalItem
-
-
+from .category import Category
