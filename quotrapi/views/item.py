@@ -23,12 +23,12 @@ class Items(ViewSet):
 
     def retrieve(self, request, pk=None):
 
-            try:
-                item = Item.objects.get(pk=pk)
+        try:
+            item = Item.objects.get(pk=pk)
 
-                serializer = ItemSerializer(item, context={'request': request})
+            serializer = ItemSerializer(item, context={'request': request})
 
-                return Response(serializer.data)
+            return Response(serializer.data)
 
-            except Item.DoesNotExist as ex:
-                return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+        except Item.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
