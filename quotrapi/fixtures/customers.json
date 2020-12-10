@@ -1,0 +1,52 @@
+[
+    {
+        "model": "quotrapi.customer",
+        "pk": 1,
+        "fields": {
+            "email": "John@nss.com",
+            "first_name": "John",
+            "last_name": "Wark",
+            "organization": "Nashville Software School"
+        }
+    },
+    {
+        "model": "quotrapi.customer",
+        "pk": 2,
+        "fields": {
+            "email": "Kristen@CelerosCommerce.com",
+            "first_name": "Kristen",
+            "last_name": "Rardin",
+            "organization": "Celeros Commerce"
+        }
+    },
+    {
+        "model": "quotrapi.customer",
+        "pk": 3,
+        "fields": {
+            "email": "James@saltworkssec.com",
+            "first_name": "James",
+            "last_name": "Nitz",
+            "organization": "Saltworks Security"
+        }
+    },
+    {
+        "model": "quotrapi.customer",
+        "pk": 4,
+        "fields": {
+            "email": "Spencer@beardoil.com",
+            "first_name": "Spencer",
+            "last_name": "Pruitt",
+            "organization": "Pruitt's Beard Oil Haberdashery"
+        }
+    },
+    {
+        "model": "quotrapi.customer",
+        "pk": 5,
+        "fields": {
+            "email": "Steve@lonelyplanet.com",
+            "first_name": "Steve",
+            "last_name": "Brownlee",
+            "organization": "Lonely Planet"
+        }
+    }
+]
