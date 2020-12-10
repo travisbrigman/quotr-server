@@ -1,0 +1,28 @@
+[
+    {
+        "model": "quotrapi.item",
+        "pk": 1,
+        "fields": {
+            "make": "AFL",
+            "model": "2900-53-0002MR",
+            "description": "AFL 1.25mm Adapter for VFL",
+            "cost": 58.05,
+            "image_url": "",
+            "created_on": "2020-01-01",
+            "margin": 25.00
+        }
+    },
+    {
+        "model": "quotrapi.item",
+        "pk": 2,
+        "fields": {
+            "make": "AFL",
+            "model": "8500-05-0001MZ",
+            "description": "AFL One Click Cleaner SC, ST, FC",
+            "cost": 56.28,
+            "image_url": "",
+            "created_on": "2020-01-01",
+            "margin": 25.00
+        }
+    }
+]
