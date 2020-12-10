@@ -15,11 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework import routers
+from django.conf.urls import url, include
+from quotrapi.views import *
+from quotrapi.models import *
 
-from django.conf.urls import include
-from quotrapi.views import register_user, login_user
+
+router = routers.DefaultRouter(trailing_slash=False)
+router.register(r'items', Items, 'item')
 
 urlpatterns = [
+    url(r'^', include(router.urls)),
     path('admin/', admin.site.urls),
     path('register', register_user),
     path('login', login_user),
