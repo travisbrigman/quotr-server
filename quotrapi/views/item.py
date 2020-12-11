@@ -24,6 +24,7 @@ class Items(ViewSet):
     """ items for quotr catalog"""
 
     def retrieve(self, request, pk=None):
+        """gets single item from database"""
 
         try:
             item = Item.objects.get(pk=pk)
@@ -60,6 +61,7 @@ class Items(ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
+        """creates new item in database"""
 
         new_item = Item()
         new_item.make = request.data["make"]
@@ -76,3 +78,31 @@ class Items(ViewSet):
             new_item, context={'request': request})
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, pk=None):
+        """updates single item in database"""
+
+        item = Item.objects.get(pk=pk)
+        item.make = request.data["make"]
+        item.model = request.data["model"]
+        item.description = request.data["description"]
+        item.margin = request.data["margin"]
+        item.cost = request.data["cost"]
+        item.created_on = request.data["created_on"]
+        item.image_url = request.data["image_url"]
+        item.save()
+
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+    def destroy(self, request, pk=None):
+        try:
+            item = Item.objects.get(pk=pk)
+            item.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except Item.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
