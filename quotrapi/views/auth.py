@@ -1,5 +1,6 @@
 """Register user"""
 import json
+from quotrapi.models.quotruser import QuotrUser
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -62,6 +63,11 @@ def register_user(request):
         last_name=req_body['last_name']
     )
 
+    quotr_user = QuotrUser.objects.create(
+        profile_image_url = req_body['bio'],
+        user=new_user
+    )
+    quotr_user.save()
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=new_user)

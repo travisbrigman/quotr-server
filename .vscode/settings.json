@@ -23,6 +23,12 @@
             "driver": "SQLite",
             "name": "quotrdb",
             "database": "${workspaceFolder:quotrserver}/db.sqlite3"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "quotr-sql",
+            "database": "${workspaceFolder:quotrserver}/db.sqlite3"
         }
     ]
 }
