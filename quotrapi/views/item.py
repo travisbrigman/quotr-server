@@ -5,6 +5,8 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
+import base64
+from django.core.files.base import ContentFile
 
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
@@ -19,7 +21,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class Items(ViewSet):
-    """Line items for Bangazon orders"""
+    """ items for quotr catalog"""
 
     def retrieve(self, request, pk=None):
 
@@ -32,3 +34,45 @@ class Items(ViewSet):
 
         except Item.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+    def list(self, request):
+        """list all items"""
+        cost = self.request.query_params.get('cost', None)
+        make = self.request.query_params.get('make', None)
+
+        items = Item.objects.all()
+
+#TODO: This only filters fro a price greater than the number entered. Ideally, a min_price and max_price would be great
+        if cost is not None:
+            def price_filter(item):
+                if item.cost >= float(cost):
+                    return True
+                return False
+
+            items = filter(price_filter, items)
+
+        if make is not None:
+            items = items.filter(make__contains=make)
+
+
+        serializer = ItemSerializer(
+            items, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def create(self, request):
+
+        new_item = Item()
+        new_item.make = request.data["make"]
+        new_item.model = request.data["model"]
+        new_item.description = request.data["description"]
+        new_item.margin = request.data["margin"]
+        new_item.cost = request.data["cost"]
+        new_item.created_on = request.data["created_on"]
+        new_item.image_url = request.data["image_url"]
+
+        new_item.save()
+
+        serializer = ItemSerializer(
+            new_item, context={'request': request})
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
