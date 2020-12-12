@@ -38,3 +38,18 @@ class Customers(ViewSet):
         serializer = CustomerSerializer(customers, many=True, context={'request': request})
 
         return Response(serializer.data)
+
+    def create(self, request):
+        """create a new customer in the database"""
+
+        new_customer = Customer()
+        new_customer.email = request.data["email"]
+        new_customer.first_name = request.data["first_name"]
+        new_customer.last_name = request.data["last_name"]
+        new_customer.organization = request.data["organization"]
+
+        new_customer.save()
+
+        serializer = CustomerSerializer(new_customer, context={'request': request})
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
