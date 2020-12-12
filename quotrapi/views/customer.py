@@ -31,3 +31,10 @@ class Customers(ViewSet):
 
         except Customer.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+    def list(self, request):
+        """list all customers"""
+        customers = Customer.objects.all()
+        serializer = CustomerSerializer(customers, many=True, context={'request': request})
+
+        return Response(serializer.data)
