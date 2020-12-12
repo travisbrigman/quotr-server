@@ -53,3 +53,16 @@ class Customers(ViewSet):
         serializer = CustomerSerializer(new_customer, context={'request': request})
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, pk=None):
+        try:
+            customer = Customer.objects.get(pk=pk)
+            customer.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except Customer.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
