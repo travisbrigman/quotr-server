@@ -3,3 +3,4 @@ from .auth import register_user
 from .item import Items
 from .proposal import Proposals
 from .customer import Customers
+from .quotruser import QuotrUsers

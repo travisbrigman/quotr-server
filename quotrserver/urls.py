@@ -24,7 +24,8 @@ from quotrapi.models import *
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'items', Items, 'item')
 router.register(r'proposals', Proposals, 'proposals')
-router.register(r'customers', Customers, 'proposals')
+router.register(r'customers', Customers, 'customers')
+router.register(r'users', QuotrUsers, 'users')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
