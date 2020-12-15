@@ -64,7 +64,7 @@ def register_user(request):
     )
 
     quotr_user = QuotrUser.objects.create(
-        profile_image_url = req_body['bio'],
+        profile_image_url = req_body['profile_image_url'],
         user=new_user
     )
     quotr_user.save()

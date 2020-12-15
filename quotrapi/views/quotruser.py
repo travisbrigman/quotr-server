@@ -22,7 +22,7 @@ class QuotrUsers(ViewSet):
         Returns:
             Response -- JSON serialized game instance
         """
-       
+    
         try:
             user = QuotrUser.objects.get(pk=pk)
             
