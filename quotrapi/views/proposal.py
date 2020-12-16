@@ -1,4 +1,6 @@
 """View module for handling requests about proposals"""
+from quotrapi.models.item import Item
+from quotrapi.views.proposalitem import ProposalItems
 from quotrapi.models import customer
 from quotrapi.models.customer import Customer
 from quotrapi.models import proposal
@@ -12,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
 import datetime
+from quotrapi.models.proposalitem import ProposalItem
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -26,31 +29,44 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         # custom property, book 2 ch. 12
 
+class ItemSerializer(serializers.HyperlinkedModelSerializer):
+    """Item Serializer"""
+    class Meta:
+        model = Item
+        url = serializers.HyperlinkedIdentityField(
+            view_name='item',
+            lookup_field='id'
+        )
+        fields = ('id', 'make', 'model', 'cost', 'description', 'margin')
+class ProposalItemSerializer(serializers.ModelSerializer):
+    """Proposal Item Serializer"""
+    class Meta:
+        model = ProposalItem
+    
+        fields = ('item',)
+        depth = 1
+
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     """customer object serializer"""
     class Meta:
         model = Customer
         url = serializers.HyperlinkedIdentityField(
-            view_name = 'customer',
+            view_name='customer',
             lookup_field='id'
         )
-        fields=('id', 'first_name', 'last_name', 'email', 'organization')
+        fields = ('id', 'first_name', 'last_name', 'email', 'organization')
 
 
-class ProposalSerializer(serializers.HyperlinkedModelSerializer):
+class ProposalSerializer(serializers.ModelSerializer):
     """JSON serializer for proposals"""
-    created_by = UserSerializer(many=False)
     customer = CustomerSerializer(many=False)
+    items = ProposalItemSerializer(many=True)
 
     class Meta:
         model = Proposal
-        url = serializers.HyperlinkedIdentityField(
-            view_name='proposal',
-            lookup_field='id'
-        )
         fields = ('id', 'created_on',
-                  'created_by', 'export_date', 'customer')
+                  'created_by_user', 'export_date', 'customer', 'items')
         depth = 1
 
 
