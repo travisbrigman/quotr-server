@@ -13,6 +13,7 @@ from rest_framework import serializers
 from rest_framework import status
 import datetime
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     """basic user serializer"""
     class Meta:
@@ -23,7 +24,19 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         )
         fields = ('id',)
 
-                #custom property, book 2 ch. 12
+        # custom property, book 2 ch. 12
+
+
+class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+    """customer object serializer"""
+    class Meta:
+        model = Customer
+        url = serializers.HyperlinkedIdentityField(
+            view_name = 'customer',
+            lookup_field='id'
+        )
+        fields=('id', 'first_name', 'last_name', 'email', 'organization')
+
 
 class ProposalSerializer(serializers.HyperlinkedModelSerializer):
     """JSON serializer for proposals"""
@@ -35,7 +48,8 @@ class ProposalSerializer(serializers.HyperlinkedModelSerializer):
             view_name='proposal',
             lookup_field='id'
         )
-        fields = ('id', 'customer_id', 'created_on', 'created_by', 'export_date')
+        fields = ('id', 'customer_id', 'created_on',
+                  'created_by', 'export_date')
 
 
 class Proposals(ViewSet):
@@ -46,14 +60,16 @@ class Proposals(ViewSet):
 
         try:
             proposal = Proposal.objects.get(pk=pk)
+            customer = Customer.objects.get(id__)
+            proposal.customer = customer
 
-            serializer = ProposalSerializer(proposal, context={'request': request})
+            serializer = ProposalSerializer(
+                proposal, context={'request': request})
 
             return Response(serializer.data)
 
         except Proposal.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
-
 
     def list(self, request):
         """list all proposals"""
@@ -69,8 +85,9 @@ class Proposals(ViewSet):
 
         current_user = QuotrUser.objects.get(user=request.auth.user)
 
-        try: 
-            new_proposal = Proposal.objects.get(customer_id= request.data["customer_id"], export_date__isnull=True)
+        try:
+            new_proposal = Proposal.objects.get(
+                customer_id=request.data["customer_id"], export_date__isnull=True)
         except Proposal.DoesNotExist:
             customer = Customer.objects.get(pk=request.data["customer_id"])
             new_proposal = Proposal()
@@ -85,7 +102,7 @@ class Proposals(ViewSet):
     def update(self, request, pk=None):
         """updates single proposal in database"""
 
-        customer = Customer.objects.get(pk=request.data["customer_id"] )
+        customer = Customer.objects.get(pk=request.data["customer_id"])
         proposal = Proposal.objects.get(pk=pk)
         proposal.customer = customer
         proposal.created_on = datetime.datetime.now()
@@ -97,7 +114,7 @@ class Proposals(ViewSet):
         try:
             proposal = Proposal.objects.get(pk=pk)
             proposal.delete()
-            
+
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
         except Proposal.DoesNotExist as ex:
@@ -105,5 +122,3 @@ class Proposals(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
