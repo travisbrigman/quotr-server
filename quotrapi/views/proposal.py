@@ -67,7 +67,7 @@ class Proposals(ViewSet):
     def create(self, request):
         """creates a new proposal in the database"""
 
-        current_user = User.objects.get(username=request.auth.user)
+        current_user = QuotrUser.objects.get(user=request.auth.user)
 
         try: 
             new_proposal = Proposal.objects.get(customer_id= request.data["customer_id"], export_date__isnull=True)

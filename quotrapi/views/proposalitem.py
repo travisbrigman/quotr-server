@@ -40,13 +40,13 @@ class ProposalItems(ViewSet):
         """
         create a proposalitem object
         """
-        current_user = User.objects.get(username=request.auth.user)
+        current_user = QuotrUser.objects.get(user=request.auth.user)
         try:
             item = Item.objects.get(id=request.data["item_id"])
         except Item.DoesNotExist:
             return Response({'message: invalid item id'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
-            proposal = Proposal.objects.get(created_by=current_user.id, created_on__isnull=True)
+            proposal = Proposal.objects.get(created_by=current_user, export_date__isnull=True)
         except Proposal.DoesNotExist:
             proposal = Proposal()
             proposal.customer = None
