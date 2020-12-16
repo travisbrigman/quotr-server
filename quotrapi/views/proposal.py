@@ -41,6 +41,7 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
 class ProposalSerializer(serializers.HyperlinkedModelSerializer):
     """JSON serializer for proposals"""
     created_by = UserSerializer(many=False)
+    customer = CustomerSerializer(many=False)
 
     class Meta:
         model = Proposal
@@ -48,8 +49,9 @@ class ProposalSerializer(serializers.HyperlinkedModelSerializer):
             view_name='proposal',
             lookup_field='id'
         )
-        fields = ('id', 'customer_id', 'created_on',
-                  'created_by', 'export_date')
+        fields = ('id', 'created_on',
+                  'created_by', 'export_date', 'customer')
+        depth = 1
 
 
 class Proposals(ViewSet):
@@ -60,7 +62,7 @@ class Proposals(ViewSet):
 
         try:
             proposal = Proposal.objects.get(pk=pk)
-            customer = Customer.objects.get(id__)
+            customer = Customer.objects.get(pk=proposal.customer_id)
             proposal.customer = customer
 
             serializer = ProposalSerializer(
