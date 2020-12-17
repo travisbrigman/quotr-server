@@ -17,17 +17,16 @@ import datetime
 from quotrapi.models.proposalitem import ProposalItem
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    """basic user serializer"""
-    class Meta:
-        model = User
-        url = serializers.HyperlinkedIdentityField(
-            view_name='user',
-            lookup_field='id'
-        )
-        fields = ('id',)
+# class UserSerializer(serializers.HyperlinkedModelSerializer):
+#     """basic user serializer"""
+#     class Meta:
+#         model = User
+#         url = serializers.HyperlinkedIdentityField(
+#             view_name='user',
+#             lookup_field='id'
+#         )
+#         fields = ('id',)
 
-        # custom property, book 2 ch. 12
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     """Item Serializer"""
@@ -38,12 +37,13 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
             lookup_field='id'
         )
         fields = ('id', 'make', 'model', 'cost', 'description', 'margin')
+
 class ProposalItemSerializer(serializers.ModelSerializer):
     """Proposal Item Serializer"""
     class Meta:
         model = ProposalItem
     
-        fields = ('item',)
+        fields = ('id','item')
         depth = 1
 
 
@@ -61,6 +61,10 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
 class ProposalSerializer(serializers.ModelSerializer):
     """JSON serializer for proposals"""
     customer = CustomerSerializer(many=False)
+    #this finds the related name 'items' in the ProposalItem Model.
+    #since in the fields below we have a 'fields' parameter, Django links them up for us
+    #it then serializes the fields in it fields like normal.
+    #we chose to only expose 'item' in the ProposalItemSerializer
     items = ProposalItemSerializer(many=True)
 
     class Meta:
@@ -78,8 +82,12 @@ class Proposals(ViewSet):
 
         try:
             proposal = Proposal.objects.get(pk=pk)
-            customer = Customer.objects.get(pk=proposal.customer_id)
-            proposal.customer = customer
+            try:
+                customer = Customer.objects.get(pk=proposal.customer_id)
+                proposal.customer = customer
+
+            except Customer.DoesNotExist:
+                pass
 
             serializer = ProposalSerializer(
                 proposal, context={'request': request})
