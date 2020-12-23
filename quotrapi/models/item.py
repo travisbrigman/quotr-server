@@ -14,3 +14,15 @@ class Item(models.Model):
     description = models.CharField(max_length=300)
     image_url = models.CharField(max_length=256)
     created_on = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def sell_price(self):
+        """docstring"""
+        if self.margin > 1:
+            margin_percentage = self.margin / 100
+        else:
+            margin_percentage = self.margin
+
+        margin_remainder = 1 - margin_percentage
+        return round(self.cost / margin_remainder, 2)
+

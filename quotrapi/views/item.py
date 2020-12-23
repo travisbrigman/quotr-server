@@ -15,7 +15,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
             view_name='item',
             lookup_field='id'
         )
-        fields = ('id', 'make', 'model', 'cost', 'margin', 'description', 'image_url', 'created_on')
+        fields = ('id', 'make', 'model', 'cost', 'margin', 'description', 'image_url', 'created_on', 'sell_price')
 
 
 class Items(ViewSet):
@@ -90,7 +90,24 @@ class Items(ViewSet):
         item.image_url = request.data["image_url"]
         item.save()
 
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        serializer = ItemSerializer(
+            item, context={'request': request})
+
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+    def partial_update(self, request, pk=None):
+        item = Item.objects.get(pk=pk)
+        # item.make = request.data["make"]
+        # item.model = request.data["model"]
+        # item.description = request.data["description"]
+        item.margin = request.data["margin"]
+        # item.cost = request.data["cost"]
+        # item.created_on = request.data["created_on"]
+        # item.image_url = request.data["image_url"]
+        item.save()
+
+        serializer = ItemSerializer(item, context={'request': request}, partial=True)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, pk=None):
         try:
