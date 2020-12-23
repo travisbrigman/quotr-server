@@ -22,9 +22,7 @@ class ProposalItemSerializer(serializers.ModelSerializer):
 
 class ProposalItems(ViewSet):
     """proposalitems for quotr proposals"""
-
     
-
     def list(self, request):
         """
         lists all proposalitems

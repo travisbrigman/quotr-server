@@ -2,7 +2,6 @@
 from quotrapi.models.quotruser import QuotrUser
 from django.db import models
 from .customer import Customer
-from django.contrib.auth.models import User
 
 
 class Proposal(models.Model):

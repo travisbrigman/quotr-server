@@ -5,6 +5,7 @@ from quotrapi.models import customer
 from quotrapi.models.customer import Customer
 from quotrapi.models import proposal
 from quotrapi.models.quotruser import QuotrUser
+from quotrapi.models import Accessory
 from django.conf.urls import url
 from django.contrib.auth.models import User
 from quotrapi.models.proposal import Proposal
@@ -16,35 +17,29 @@ from rest_framework import status
 import datetime
 from quotrapi.models.proposalitem import ProposalItem
 
+class AccessorySerializer(serializers.ModelSerializer):
+    """Accessory Serializer"""
+    class Meta:
+        model = Accessory
+        fields = ('accessory',)
 
-# class UserSerializer(serializers.HyperlinkedModelSerializer):
-#     """basic user serializer"""
-#     class Meta:
-#         model = User
-#         url = serializers.HyperlinkedIdentityField(
-#             view_name='user',
-#             lookup_field='id'
-#         )
-#         fields = ('id',)
-
-
-class ItemSerializer(serializers.HyperlinkedModelSerializer):
+class ItemSerializer(serializers.ModelSerializer):
     """Item Serializer"""
+
+    accessories = AccessorySerializer(many=True)
+
     class Meta:
         model = Item
-        url = serializers.HyperlinkedIdentityField(
-            view_name='item',
-            lookup_field='id'
-        )
-        fields = ('id', 'make', 'model', 'cost', 'description', 'margin')
+        fields = ('id', 'make', 'model', 'cost', 'description', 'margin', 'sell_price', 'accessories')
 
 class ProposalItemSerializer(serializers.ModelSerializer):
     """Proposal Item Serializer"""
+
+    item = ItemSerializer(many=False)
+
     class Meta:
-        model = ProposalItem
-    
+        model = ProposalItem 
         fields = ('id','item')
-        depth = 1
 
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
@@ -57,22 +52,20 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
         )
         fields = ('id', 'first_name', 'last_name', 'email', 'organization')
 
-
 class ProposalSerializer(serializers.ModelSerializer):
     """JSON serializer for proposals"""
     customer = CustomerSerializer(many=False)
     #this finds the related name 'items' in the ProposalItem Model.
-    #since in the fields below we have a 'fields' parameter, Django links them up for us
+    #since in the fields below we have a 'items' parameter, Django links them up for us
     #it then serializes the fields in it fields like normal.
     #we chose to only expose 'item' in the ProposalItemSerializer
-    items = ProposalItemSerializer(many=True)
+    proposalitems = ProposalItemSerializer(many=True)
 
     class Meta:
         model = Proposal
         fields = ('id', 'created_on',
-                  'created_by_user', 'export_date', 'customer', 'items')
+                'created_by_user', 'export_date', 'customer', 'proposalitems')
         depth = 1
-
 
 class Proposals(ViewSet):
     """proposals for quotr proposal view"""
@@ -82,12 +75,14 @@ class Proposals(ViewSet):
 
         try:
             proposal = Proposal.objects.get(pk=pk)
-            try:
-                customer = Customer.objects.get(pk=proposal.customer_id)
-                proposal.customer = customer
+            # try:
+            #     # customer = Customer.objects.get(pk=proposal.customer_id)
+            #     # foo = ProposalItem.objects.filter(proposal=proposal)
+            #     # print(foo)
+            #     # proposal.customer = customer
 
-            except Customer.DoesNotExist:
-                pass
+            # except Customer.DoesNotExist:
+            #     pass
 
             serializer = ProposalSerializer(
                 proposal, context={'request': request})
