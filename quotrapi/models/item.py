@@ -13,6 +13,9 @@ class Item(models.Model):
         validators=[MinValueValidator(0.00), MaxValueValidator(1.99)],)
     description = models.CharField(max_length=300)
     image_url = models.CharField(max_length=256)
+    image_path = models.ImageField(
+        upload_to='items', height_field=None,
+        width_field=None, max_length=None, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     @property

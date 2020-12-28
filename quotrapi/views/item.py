@@ -1,4 +1,6 @@
 """View module for handling requests about items"""
+import uuid, base64
+from django.core.files.base import ContentFile
 from quotrapi.models.item import Item
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
@@ -15,7 +17,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
             view_name='item',
             lookup_field='id'
         )
-        fields = ('id', 'make', 'model', 'cost', 'margin', 'description', 'image_url', 'created_on', 'sell_price')
+        fields = ('id', 'make', 'model', 'cost', 'margin', 'description', 'image_path', 'created_on', 'sell_price')
 
 
 class Items(ViewSet):
@@ -68,7 +70,11 @@ class Items(ViewSet):
         new_item.margin = request.data["margin"]
         new_item.cost = request.data["cost"]
         new_item.created_on = request.data["created_on"]
-        new_item.image_url = request.data["image_url"]
+        if "image_path" in request.data:
+            format, imgstr = request.data["image_path"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{new_item.id}-{request.data["model"]}.{ext}')
+            new_item.image_path = data
 
         new_item.save()
 
@@ -87,7 +93,11 @@ class Items(ViewSet):
         item.margin = request.data["margin"]
         item.cost = request.data["cost"]
         item.created_on = request.data["created_on"]
-        item.image_url = request.data["image_url"]
+        if "image_path" in request.data:
+            format, imgstr = request.data["image_path"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{item.id}-{request.data["model"]}.{ext}')
+            item.image_path = data
         item.save()
 
         serializer = ItemSerializer(

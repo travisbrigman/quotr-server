@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from quotrapi.views.accessory import Accessories
 from quotrapi.views.currentuser import CurrentUser
 from quotrapi.views.proposalitem import ProposalItems
@@ -20,9 +21,9 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
 from django.conf.urls import url, include
+from django.conf.urls.static import static
 from quotrapi.views import *
 from quotrapi.models import *
-
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'currentuser', CurrentUser, 'quotruser')
@@ -39,4 +40,4 @@ urlpatterns = [
     path('register', register_user),
     path('login', login_user),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
