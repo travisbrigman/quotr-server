@@ -7,6 +7,19 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from quotrapi.models import QuotrUser
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email', 'date_joined', 'is_staff', 'is_active')
+
+class QuotrUserSerializer(serializers.ModelSerializer):
+    """Serializer for QuotrUser Info"""
+    user = UserSerializer(many=False)
+
+    class Meta:
+        model = QuotrUser
+        fields = ('id', 'user', 'is_current_user', 'profile_image')
+
 class QuotrUsers(ViewSet):
     """QuotrUser Class"""
 
@@ -37,17 +50,14 @@ class QuotrUsers(ViewSet):
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
+
+    def partial_update(self, request, pk=None):
+        quotr_user = QuotrUser.objects.get(pk=pk)
+        quotr_user.profile_image = request.data["profile_image"]
+        quotr_user.save()
+
+        serializer = QuotrUserSerializer(quotr_user, context={'request': request}, partial=True)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
     
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'username', 'email', 'date_joined', 'is_staff', 'is_active')
 
-class QuotrUserSerializer(serializers.ModelSerializer):
-    """Serializer for QuotrUser Info"""
-    user = UserSerializer(many=False)
-
-    class Meta:
-        model = QuotrUser
-        fields = ('id', 'user', 'is_current_user')

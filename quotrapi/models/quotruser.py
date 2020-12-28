@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 
 class QuotrUser(models.Model):
     """QuotrUser database model"""
-    profile_image_url = models.CharField(max_length=500)
+    profile_image = models.ImageField(
+        upload_to='quotrusers', height_field=None,
+        width_field=None, max_length=None, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
