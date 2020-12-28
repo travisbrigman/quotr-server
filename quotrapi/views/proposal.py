@@ -75,14 +75,6 @@ class Proposals(ViewSet):
 
         try:
             proposal = Proposal.objects.get(pk=pk)
-            # try:
-            #     # customer = Customer.objects.get(pk=proposal.customer_id)
-            #     # foo = ProposalItem.objects.filter(proposal=proposal)
-            #     # print(foo)
-            #     # proposal.customer = customer
-
-            # except Customer.DoesNotExist:
-            #     pass
 
             serializer = ProposalSerializer(
                 proposal, context={'request': request})
