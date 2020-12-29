@@ -22,7 +22,7 @@ class ProposalItemSerializer(serializers.ModelSerializer):
 
 class ProposalItems(ViewSet):
     """proposalitems for quotr proposals"""
-    
+
     def list(self, request):
         """
         lists all proposalitems
@@ -44,7 +44,8 @@ class ProposalItems(ViewSet):
         except Item.DoesNotExist:
             return Response({'message: invalid item id'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
-            proposal = Proposal.objects.get(created_by=current_user, export_date__isnull=True)
+            # proposal = Proposal.objects.get(created_by=current_user, export_date__isnull=True)
+             proposal = Proposal.objects.get(id=request.data["proposal_id"])
         except Proposal.DoesNotExist:
             proposal = Proposal()
             proposal.customer = None
