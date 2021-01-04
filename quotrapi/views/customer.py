@@ -54,6 +54,21 @@ class Customers(ViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def update(self, request, pk=None):
+        """Updates Single Customer"""
+
+        customer = Customer.objects.get(pk=pk)
+        customer.email = request.data["email"]
+        customer.first_name = request.data["first_name"]
+        customer.last_name = request.data["last_name"]
+        customer.organization = request.data["organization"]
+
+        customer.save()
+        
+        serializer = CustomerSerializer(customer, context={'request': request})
+
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
     def destroy(self, request, pk=None):
         try:
             customer = Customer.objects.get(pk=pk)

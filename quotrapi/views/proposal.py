@@ -22,6 +22,7 @@ class AccessorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Accessory
         fields = ('accessory',)
+        depth = 1
 
 class ItemSerializer(serializers.ModelSerializer):
     """Item Serializer"""
