@@ -2,15 +2,26 @@
 import uuid, base64
 from django.core.files.base import ContentFile
 from quotrapi.models.item import Item
+from quotrapi.models.accessory import Accessory
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
 
+class AccessorySerializer(serializers.ModelSerializer):
+    """Accessory Serializer"""
+    class Meta:
+        model = Accessory
+        fields = ('accessory',)
+        depth = 1
+
 
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     """JSON serializer for items """
+
+    # accessories = AccessorySerializer(many=True)
+
     class Meta:
         model = Item
         url = serializers.HyperlinkedIdentityField(
@@ -94,10 +105,11 @@ class Items(ViewSet):
         item.cost = request.data["cost"]
         item.created_on = request.data["created_on"]
         if "image_path" in request.data:
-            format, imgstr = request.data["image_path"].split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name=f'{item.id}-{request.data["model"]}.{ext}')
-            item.image_path = data
+            if request.data["image_path"] is not None:
+                format, imgstr = request.data["image_path"].split(';base64,')
+                ext = format.split('/')[-1]
+                data = ContentFile(base64.b64decode(imgstr), name=f'{item.id}-{request.data["model"]}.{ext}')
+                item.image_path = data
         item.save()
 
         serializer = ItemSerializer(

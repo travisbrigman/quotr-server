@@ -89,6 +89,10 @@ class Proposals(ViewSet):
         """list all proposals"""
         proposals = Proposal.objects.all()
 
+        customer_id = self.request.query_params.get('customer_id', None)
+        if customer_id is not None:
+            proposals = proposals.filter(customer_id=customer_id)
+
         serializer = ProposalSerializer(
             proposals, many=True, context={'request': request}
         )

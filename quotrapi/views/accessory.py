@@ -12,7 +12,7 @@ class AccessorySerializer(serializers.ModelSerializer):
     """JSON serializer for Accessories"""
     class Meta:
         model = Accessory
-        fields = ('item_id', 'accessory_id')
+        fields = ('item', 'accessory')
 
 class Accessories(ViewSet):
     """accessories of items"""
@@ -20,11 +20,11 @@ class Accessories(ViewSet):
     def create(self, request):
         """creates a new accessory relationship"""
         try:
-            item = Item.objects.get(id=request.data["item_id"])
+            item = Item.objects.get(id=request.data["item"])
         except Item.DoesNotExist:
             return Response({'message: invalid item id'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         try:
-            accessory = Item.objects.get(id=request.data["accessory_id"])
+            accessory = Item.objects.get(id=request.data["accessory"])
         except Item.DoesNotExist:
             return Response({'message: invalid accessory id'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
