@@ -1,13 +1,16 @@
 """View module for handling requests about items"""
 import uuid, base64
 from django.core.files.base import ContentFile
+from quotrapi.models import item
 from quotrapi.models.item import Item
 from quotrapi.models.accessory import Accessory
 from django.http import HttpResponseServerError
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
+from rest_framework.pagination import LimitOffsetPagination
+
 
 class AccessorySerializer(serializers.ModelSerializer):
     """Accessory Serializer"""
@@ -31,8 +34,10 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'make', 'model', 'cost', 'margin', 'description', 'image_path', 'created_on', 'sell_price')
 
 
-class Items(ViewSet):
+class Items(ModelViewSet):
     """ items for quotr catalog"""
+    pagination_class=LimitOffsetPagination
+    serializer_class=ItemSerializer
 
     def retrieve(self, request, pk=None):
         """gets single item from database"""
@@ -66,9 +71,15 @@ class Items(ViewSet):
         if make is not None:
             items = items.filter(make__contains=make)
 
+        page = self.paginate_queryset(items)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-        serializer = ItemSerializer(
-            items, many=True, context={'request': request})
+        # serializer = ItemSerializer(
+        #     items, many=True, context={'request': request})
+        # return Response(serializer.data)
+        serializer = self.get_serializer(items, many=True)
         return Response(serializer.data)
 
     def create(self, request):
