@@ -1,5 +1,6 @@
 """View module for handling requests about items"""
 import uuid, base64
+from django.db.models.query_utils import Q
 from django.core.files.base import ContentFile
 from quotrapi.models import item
 from quotrapi.models.item import Item
@@ -23,7 +24,7 @@ class AccessorySerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     """JSON serializer for items """
 
-    # accessories = AccessorySerializer(many=True)
+    accessories = AccessorySerializer(many=True)
 
     class Meta:
         model = Item
@@ -31,7 +32,7 @@ class ItemSerializer(serializers.HyperlinkedModelSerializer):
             view_name='item',
             lookup_field='id'
         )
-        fields = ('id', 'make', 'model', 'cost', 'margin', 'description', 'image_path', 'created_on', 'sell_price')
+        fields = ('id', 'make', 'model', 'cost', 'margin', 'description', 'image_path', 'created_on', 'sell_price','accessories')
 
 
 class Items(ModelViewSet):
@@ -56,10 +57,17 @@ class Items(ModelViewSet):
         """list all items"""
         cost = self.request.query_params.get('cost', None)
         make = self.request.query_params.get('make', None)
+        # search = self.request.query_params.get('search', None)
+        search = request.GET.get('search')
 
         items = Item.objects.all()
 
 #TODO: This only filters fro a price greater than the number entered. Ideally, a min_price and max_price would be great
+        if search is not None:
+            lookups= Q(make__icontains=search) or Q(model__icontains=search) or Q(cost__icontains=search) or Q(description__icontains=search)
+
+            items= Item.objects.filter(lookups)
+
         if cost is not None:
             def price_filter(item):
                 if item.cost >= float(cost):
