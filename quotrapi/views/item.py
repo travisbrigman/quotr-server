@@ -57,8 +57,7 @@ class Items(ModelViewSet):
         """list all items"""
         cost = self.request.query_params.get('cost', None)
         make = self.request.query_params.get('make', None)
-        # search = self.request.query_params.get('search', None)
-        search = request.GET.get('search')
+        search = self.request.query_params.get('search', None)
 
         items = Item.objects.all()
 
