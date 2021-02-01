@@ -1,0 +1,19 @@
+[
+    {
+        "model": "quotrapi.quotruser",
+        "pk": 1,
+        "fields": {
+            "profile_image_url": "",
+            "user": 1
+        }
+    },
+    {
+        "model": "quotrapi.quotruser",
+        "pk": 2,
+        "fields": {
+            "profile_image_url": "",
+            "user": 2
+        }
+    }
+    
+]
